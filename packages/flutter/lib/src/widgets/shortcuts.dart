@@ -880,7 +880,7 @@ class Shortcuts extends StatefulWidget {
 
 class _ShortcutsState extends State<Shortcuts> {
   ShortcutManager? _internalManager;
-  ShortcutManager get manager => widget.manager ?? _internalManager!;
+  ShortcutManager get manager => widget().manager ?? _internalManager!;
 
   @override
   void dispose() {
@@ -891,24 +891,24 @@ class _ShortcutsState extends State<Shortcuts> {
   @override
   void initState() {
     super.initState();
-    if (widget.manager == null) {
+    if (widget().manager == null) {
       _internalManager = ShortcutManager();
     }
-    manager.shortcuts = widget.shortcuts;
+    manager.shortcuts = widget().shortcuts;
   }
 
   @override
   void didUpdateWidget(Shortcuts oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.manager != oldWidget.manager) {
-      if (widget.manager != null) {
+    if (widget().manager != oldWidget.manager) {
+      if (widget().manager != null) {
         _internalManager?.dispose();
         _internalManager = null;
       } else {
         _internalManager ??= ShortcutManager();
       }
     }
-    manager.shortcuts = widget.shortcuts;
+    manager.shortcuts = widget().shortcuts;
   }
 
   KeyEventResult _handleOnKey(FocusNode node, RawKeyEvent event) {
@@ -926,7 +926,7 @@ class _ShortcutsState extends State<Shortcuts> {
       onKey: _handleOnKey,
       child: _ShortcutsMarker(
         manager: manager,
-        child: widget.child,
+        child: widget().child,
       ),
     );
   }

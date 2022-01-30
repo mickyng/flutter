@@ -236,7 +236,7 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
     _iconColor = _controller.drive(_iconColorTween.chain(_easeInTween));
     _backgroundColor = _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
-    _isExpanded = PageStorage.of(context)?.readState(context) as bool? ?? widget.initiallyExpanded;
+    _isExpanded = PageStorage.of(context)?.readState(context) as bool? ?? widget().initiallyExpanded;
     if (_isExpanded)
       _controller.value = 1.0;
   }
@@ -263,7 +263,7 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
       }
       PageStorage.of(context)?.writeState(context, _isExpanded);
     });
-    widget.onExpansionChanged?.call(_isExpanded);
+    widget().onExpansionChanged?.call(_isExpanded);
   }
 
   // Platform or null affinity defaults to trailing.
@@ -285,13 +285,13 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
   }
 
   Widget? _buildLeadingIcon(BuildContext context) {
-    if (_effectiveAffinity(widget.controlAffinity) != ListTileControlAffinity.leading)
+    if (_effectiveAffinity(widget().controlAffinity) != ListTileControlAffinity.leading)
       return null;
     return _buildIcon(context);
   }
 
   Widget? _buildTrailingIcon(BuildContext context) {
-    if (_effectiveAffinity(widget.controlAffinity) != ListTileControlAffinity.trailing)
+    if (_effectiveAffinity(widget().controlAffinity) != ListTileControlAffinity.trailing)
       return null;
     return _buildIcon(context);
   }
@@ -315,16 +315,16 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
             textColor: _headerColor.value,
             child: ListTile(
               onTap: _handleTap,
-              contentPadding: widget.tilePadding,
-              leading: widget.leading ?? _buildLeadingIcon(context),
-              title: widget.title,
-              subtitle: widget.subtitle,
-              trailing: widget.trailing ?? _buildTrailingIcon(context),
+              contentPadding: widget().tilePadding,
+              leading: widget().leading ?? _buildLeadingIcon(context),
+              title: widget().title,
+              subtitle: widget().subtitle,
+              trailing: widget().trailing ?? _buildTrailingIcon(context),
             ),
           ),
           ClipRect(
             child: Align(
-              alignment: widget.expandedAlignment ?? Alignment.center,
+              alignment: widget().expandedAlignment ?? Alignment.center,
               heightFactor: _heightFactor.value,
               child: child,
             ),
@@ -340,31 +340,31 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
     final ColorScheme colorScheme = theme.colorScheme;
     _borderColorTween.end = theme.dividerColor;
     _headerColorTween
-      ..begin = widget.collapsedTextColor ?? theme.textTheme.subtitle1!.color
-      ..end = widget.textColor ?? colorScheme.primary;
+      ..begin = widget().collapsedTextColor ?? theme.textTheme.subtitle1!.color
+      ..end = widget().textColor ?? colorScheme.primary;
     _iconColorTween
-      ..begin = widget.collapsedIconColor ?? theme.unselectedWidgetColor
-      ..end = widget.iconColor ?? colorScheme.primary;
+      ..begin = widget().collapsedIconColor ?? theme.unselectedWidgetColor
+      ..end = widget().iconColor ?? colorScheme.primary;
     _backgroundColorTween
-      ..begin = widget.collapsedBackgroundColor
-      ..end = widget.backgroundColor;
+      ..begin = widget().collapsedBackgroundColor
+      ..end = widget().backgroundColor;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool closed = !_isExpanded && _controller.isDismissed;
-    final bool shouldRemoveChildren = closed && !widget.maintainState;
+    final bool shouldRemoveChildren = closed && !widget().maintainState;
 
     final Widget result = Offstage(
       offstage: closed,
       child: TickerMode(
         enabled: !closed,
         child: Padding(
-          padding: widget.childrenPadding ?? EdgeInsets.zero,
+          padding: widget().childrenPadding ?? EdgeInsets.zero,
           child: Column(
-            crossAxisAlignment: widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
-            children: widget.children,
+            crossAxisAlignment: widget().expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
+            children: widget().children,
           ),
         ),
       ),

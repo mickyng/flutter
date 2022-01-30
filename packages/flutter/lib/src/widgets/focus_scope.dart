@@ -464,7 +464,7 @@ class _FocusWithExternalFocusNode extends Focus {
 
 class _FocusState extends State<Focus> {
   FocusNode? _internalNode;
-  FocusNode get focusNode => widget.focusNode ?? _internalNode!;
+  FocusNode get focusNode => widget().focusNode ?? _internalNode!;
   late bool _hadPrimaryFocus;
   late bool _couldRequestFocus;
   late bool _descendantsWereFocusable;
@@ -478,23 +478,23 @@ class _FocusState extends State<Focus> {
   }
 
   void _initNode() {
-    if (widget.focusNode == null) {
+    if (widget().focusNode == null) {
       // Only create a new node if the widget doesn't have one.
       // This calls a function instead of just allocating in place because
       // _createNode is overridden in _FocusScopeState.
       _internalNode ??= _createNode();
     }
-    focusNode.descendantsAreFocusable = widget.descendantsAreFocusable;
-    if (widget.skipTraversal != null) {
-      focusNode.skipTraversal = widget.skipTraversal;
+    focusNode.descendantsAreFocusable = widget().descendantsAreFocusable;
+    if (widget().skipTraversal != null) {
+      focusNode.skipTraversal = widget().skipTraversal;
     }
-    if (widget.canRequestFocus != null) {
-      focusNode.canRequestFocus = widget.canRequestFocus;
+    if (widget().canRequestFocus != null) {
+      focusNode.canRequestFocus = widget().canRequestFocus;
     }
     _couldRequestFocus = focusNode.canRequestFocus;
     _descendantsWereFocusable = focusNode.descendantsAreFocusable;
     _hadPrimaryFocus = focusNode.hasPrimaryFocus;
-    _focusAttachment = focusNode.attach(context, onKeyEvent: widget.onKeyEvent, onKey: widget.onKey);
+    _focusAttachment = focusNode.attach(context, onKeyEvent: widget().onKeyEvent, onKey: widget().onKey);
 
     // Add listener even if the _internalNode existed before, since it should
     // not be listening now if we're re-using a previous one because it should
@@ -504,10 +504,10 @@ class _FocusState extends State<Focus> {
 
   FocusNode _createNode() {
     return FocusNode(
-      debugLabel: widget.debugLabel,
-      canRequestFocus: widget.canRequestFocus,
-      descendantsAreFocusable: widget.descendantsAreFocusable,
-      skipTraversal: widget.skipTraversal,
+      debugLabel: widget().debugLabel,
+      canRequestFocus: widget().canRequestFocus,
+      descendantsAreFocusable: widget().descendantsAreFocusable,
+      skipTraversal: widget().skipTraversal,
     );
   }
 
@@ -532,7 +532,7 @@ class _FocusState extends State<Focus> {
   }
 
   void _handleAutofocus() {
-    if (!_didAutofocus && widget.autofocus) {
+    if (!_didAutofocus && widget().autofocus) {
       FocusScope.of(context).autofocus(focusNode);
       _didAutofocus = true;
     }
@@ -556,29 +556,29 @@ class _FocusState extends State<Focus> {
     super.didUpdateWidget(oldWidget);
     assert(() {
       // Only update the debug label in debug builds.
-      if (oldWidget.focusNode == widget.focusNode &&
-          !widget._usingExternalFocus &&
-          oldWidget.debugLabel != widget.debugLabel) {
-        focusNode.debugLabel = widget.debugLabel;
+      if (oldWidget.focusNode == widget().focusNode &&
+          !widget()._usingExternalFocus &&
+          oldWidget.debugLabel != widget().debugLabel) {
+        focusNode.debugLabel = widget().debugLabel;
       }
       return true;
     }());
 
-    if (oldWidget.focusNode == widget.focusNode) {
-      if (!widget._usingExternalFocus) {
-        if (widget.onKey != focusNode.onKey) {
-          focusNode.onKey = widget.onKey;
+    if (oldWidget.focusNode == widget().focusNode) {
+      if (!widget()._usingExternalFocus) {
+        if (widget().onKey != focusNode.onKey) {
+          focusNode.onKey = widget().onKey;
         }
-        if (widget.onKeyEvent != focusNode.onKeyEvent) {
-          focusNode.onKeyEvent = widget.onKeyEvent;
+        if (widget().onKeyEvent != focusNode.onKeyEvent) {
+          focusNode.onKeyEvent = widget().onKeyEvent;
         }
-        if (widget.skipTraversal != null) {
-          focusNode.skipTraversal = widget.skipTraversal;
+        if (widget().skipTraversal != null) {
+          focusNode.skipTraversal = widget().skipTraversal;
         }
-        if (widget.canRequestFocus != null) {
-          focusNode.canRequestFocus = widget.canRequestFocus;
+        if (widget().canRequestFocus != null) {
+          focusNode.canRequestFocus = widget().canRequestFocus;
         }
-        focusNode.descendantsAreFocusable = widget.descendantsAreFocusable;
+        focusNode.descendantsAreFocusable = widget().descendantsAreFocusable;
       }
     } else {
       _focusAttachment!.detach();
@@ -586,7 +586,7 @@ class _FocusState extends State<Focus> {
       _initNode();
     }
 
-    if (oldWidget.autofocus != widget.autofocus) {
+    if (oldWidget.autofocus != widget().autofocus) {
       _handleAutofocus();
     }
   }
@@ -595,7 +595,7 @@ class _FocusState extends State<Focus> {
     final bool hasPrimaryFocus = focusNode.hasPrimaryFocus;
     final bool canRequestFocus = focusNode.canRequestFocus;
     final bool descendantsAreFocusable = focusNode.descendantsAreFocusable;
-    widget.onFocusChange?.call(focusNode.hasFocus);
+    widget().onFocusChange?.call(focusNode.hasFocus);
     // Check the cached states that matter here, and call setState if they have
     // changed.
     if (_hadPrimaryFocus != hasPrimaryFocus) {
@@ -618,12 +618,12 @@ class _FocusState extends State<Focus> {
   @override
   Widget build(BuildContext context) {
     _focusAttachment!.reparent();
-    Widget child = widget.child;
-    if (widget.includeSemantics) {
+    Widget child = widget().child;
+    if (widget().includeSemantics) {
       child = Semantics(
         focusable: _couldRequestFocus,
         focused: _hadPrimaryFocus,
-        child: widget.child,
+        child: widget().child,
       );
     }
     return _FocusMarker(
@@ -791,9 +791,9 @@ class _FocusScopeState extends _FocusState {
   @override
   FocusScopeNode _createNode() {
     return FocusScopeNode(
-      debugLabel: widget.debugLabel,
-      canRequestFocus: widget.canRequestFocus,
-      skipTraversal: widget.skipTraversal,
+      debugLabel: widget().debugLabel,
+      canRequestFocus: widget().canRequestFocus,
+      skipTraversal: widget().skipTraversal,
     );
   }
 
@@ -804,7 +804,7 @@ class _FocusScopeState extends _FocusState {
       explicitChildNodes: true,
       child: _FocusMarker(
         node: focusNode,
-        child: widget.child,
+        child: widget().child,
       ),
     );
   }

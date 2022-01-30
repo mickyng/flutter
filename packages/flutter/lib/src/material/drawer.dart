@@ -341,7 +341,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
   void initState() {
     super.initState();
     _controller = AnimationController(
-      value: widget.isDrawerOpen ? 1.0 : 0.0,
+      value: widget().isDrawerOpen ? 1.0 : 0.0,
       duration: _kBaseSettleDuration,
       vsync: this,
     );
@@ -366,13 +366,13 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
   @override
   void didUpdateWidget(DrawerController oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.scrimColor != oldWidget.scrimColor)
+    if (widget().scrimColor != oldWidget.scrimColor)
       _scrimColorTween = _buildScrimColorTween();
-    if (widget.isDrawerOpen != oldWidget.isDrawerOpen) {
+    if (widget().isDrawerOpen != oldWidget.isDrawerOpen) {
       switch(_controller.status) {
         case AnimationStatus.completed:
         case AnimationStatus.dismissed:
-          _controller.value = widget.isDrawerOpen ? 1.0 : 0.0;
+          _controller.value = widget().isDrawerOpen ? 1.0 : 0.0;
           break;
         case AnimationStatus.forward:
         case AnimationStatus.reverse:
@@ -452,7 +452,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
 
   void _move(DragUpdateDetails details) {
     double delta = details.primaryDelta! / _width;
-    switch (widget.alignment) {
+    switch (widget().alignment) {
       case DrawerAlignment.start:
         break;
       case DrawerAlignment.end:
@@ -469,8 +469,8 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
     }
 
     final bool opened = _controller.value > 0.5;
-    if (opened != _previouslyOpened && widget.drawerCallback != null)
-      widget.drawerCallback!(opened);
+    if (opened != _previouslyOpened && widget().drawerCallback != null)
+      widget().drawerCallback!(opened);
     _previouslyOpened = opened;
   }
 
@@ -479,7 +479,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
       return;
     if (details.velocity.pixelsPerSecond.dx.abs() >= _kMinFlingVelocity) {
       double visualVelocity = details.velocity.pixelsPerSecond.dx / _width;
-      switch (widget.alignment) {
+      switch (widget().alignment) {
         case DrawerAlignment.start:
           break;
         case DrawerAlignment.end:
@@ -489,11 +489,11 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
       switch (Directionality.of(context)) {
         case TextDirection.rtl:
           _controller.fling(velocity: -visualVelocity);
-          widget.drawerCallback?.call(visualVelocity < 0.0);
+          widget().drawerCallback?.call(visualVelocity < 0.0);
           break;
         case TextDirection.ltr:
           _controller.fling(velocity: visualVelocity);
-          widget.drawerCallback?.call(visualVelocity > 0.0);
+          widget().drawerCallback?.call(visualVelocity > 0.0);
           break;
       }
     } else if (_controller.value < 0.5) {
@@ -508,13 +508,13 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
   /// Typically called by [ScaffoldState.openDrawer].
   void open() {
     _controller.fling();
-    widget.drawerCallback?.call(true);
+    widget().drawerCallback?.call(true);
   }
 
   /// Starts an animation to close the drawer.
   void close() {
     _controller.fling(velocity: -1.0);
-    widget.drawerCallback?.call(false);
+    widget().drawerCallback?.call(false);
   }
 
   late ColorTween _scrimColorTween;
@@ -523,15 +523,15 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
   ColorTween _buildScrimColorTween() {
     return ColorTween(
       begin: Colors.transparent,
-      end: widget.scrimColor
+      end: widget().scrimColor
           ?? DrawerTheme.of(context).scrimColor
           ?? Colors.black54,
     );
   }
 
   AlignmentDirectional get _drawerOuterAlignment {
-    assert(widget.alignment != null);
-    switch (widget.alignment) {
+    assert(widget().alignment != null);
+    switch (widget().alignment) {
       case DrawerAlignment.start:
         return AlignmentDirectional.centerStart;
       case DrawerAlignment.end:
@@ -540,8 +540,8 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
   }
 
   AlignmentDirectional get _drawerInnerAlignment {
-    assert(widget.alignment != null);
-    switch (widget.alignment) {
+    assert(widget().alignment != null);
+    switch (widget().alignment) {
       case DrawerAlignment.start:
         return AlignmentDirectional.centerEnd;
       case DrawerAlignment.end:
@@ -550,12 +550,12 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
   }
 
   Widget _buildDrawer(BuildContext context) {
-    final bool drawerIsStart = widget.alignment == DrawerAlignment.start;
+    final bool drawerIsStart = widget().alignment == DrawerAlignment.start;
     final EdgeInsets padding = MediaQuery.of(context).padding;
     final TextDirection textDirection = Directionality.of(context);
 
-    double? dragAreaWidth = widget.edgeDragWidth;
-    if (widget.edgeDragWidth == null) {
+    double? dragAreaWidth = widget().edgeDragWidth;
+    if (widget().edgeDragWidth == null) {
       switch (textDirection) {
         case TextDirection.ltr:
           dragAreaWidth = _kEdgeDragWidth +
@@ -569,7 +569,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
     }
 
     if (_controller.status == AnimationStatus.dismissed) {
-      if (widget.enableOpenDragGesture) {
+      if (widget().enableOpenDragGesture) {
         return Align(
           alignment: _drawerOuterAlignment,
           child: GestureDetector(
@@ -578,7 +578,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
             onHorizontalDragEnd: _settle,
             behavior: HitTestBehavior.translucent,
             excludeFromSemantics: true,
-            dragStartBehavior: widget.dragStartBehavior,
+            dragStartBehavior: widget().dragStartBehavior,
             child: Container(width: dragAreaWidth),
           ),
         );
@@ -607,7 +607,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
         onHorizontalDragEnd: _settle,
         onHorizontalDragCancel: _handleDragCancel,
         excludeFromSemantics: true,
-        dragStartBehavior: widget.dragStartBehavior,
+        dragStartBehavior: widget().dragStartBehavior,
         child: RepaintBoundary(
           child: Stack(
             children: <Widget>[
@@ -637,7 +637,7 @@ class DrawerControllerState extends State<DrawerController> with SingleTickerPro
                     child: FocusScope(
                       key: _drawerKey,
                       node: _focusScopeNode,
-                      child: widget.child,
+                      child: widget().child,
                     ),
                   ),
                 ),

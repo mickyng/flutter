@@ -112,7 +112,7 @@ class _SegmentState<T> extends State<_Segment<T>> with TickerProviderStateMixin<
     super.initState();
     highlightPressScaleController = AnimationController(
       duration: _kOpacityAnimationDuration,
-      value: widget.shouldScaleContent ? 1 : 0,
+      value: widget().shouldScaleContent ? 1 : 0,
       vsync: this,
     );
 
@@ -123,14 +123,14 @@ class _SegmentState<T> extends State<_Segment<T>> with TickerProviderStateMixin<
 
   @override
   void didUpdateWidget(_Segment<T> oldWidget) {
-    assert(oldWidget.key == widget.key);
+    assert(oldWidget.key == widget().key);
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.shouldScaleContent != widget.shouldScaleContent) {
+    if (oldWidget.shouldScaleContent != widget().shouldScaleContent) {
       highlightPressScaleAnimation = highlightPressScaleController.drive(
         Tween<double>(
           begin: highlightPressScaleAnimation.value,
-          end: widget.shouldScaleContent ? _kMinThumbScale : 1.0,
+          end: widget().shouldScaleContent ? _kMinThumbScale : 1.0,
         ),
       );
       highlightPressScaleController.animateWith(_kThumbSpringAnimationSimulation);
@@ -152,18 +152,18 @@ class _SegmentState<T> extends State<_Segment<T>> with TickerProviderStateMixin<
         alignment: Alignment.center,
         children: <Widget>[
           AnimatedOpacity(
-            opacity: widget.shouldFadeoutContent ? _kContentPressedMinOpacity : 1,
+            opacity: widget().shouldFadeoutContent ? _kContentPressedMinOpacity : 1,
             duration: _kOpacityAnimationDuration,
             curve: Curves.ease,
             child: AnimatedDefaultTextStyle(
               style: DefaultTextStyle.of(context)
                 .style
-                .merge(TextStyle(fontWeight: widget.highlighted ? FontWeight.w500 : FontWeight.normal)),
+                .merge(TextStyle(fontWeight: widget().highlighted ? FontWeight.w500 : FontWeight.normal)),
               duration: _kHighlightAnimationDuration,
               curve: Curves.ease,
               child: ScaleTransition(
                 scale: highlightPressScaleAnimation,
-                child: widget.child,
+                child: widget().child,
               ),
             ),
           ),
@@ -175,7 +175,7 @@ class _SegmentState<T> extends State<_Segment<T>> with TickerProviderStateMixin<
           Offstage(
             child: DefaultTextStyle.merge(
               style: const TextStyle(fontWeight: FontWeight.w500),
-              child: widget.child,
+              child: widget().child,
             ),
           ),
         ],
@@ -206,19 +206,19 @@ class _SegmentSeparatorState extends State<_SegmentSeparator> with TickerProvide
 
     separatorOpacityController = AnimationController(
       duration: _kSpringAnimationDuration,
-      value: widget.highlighted ? 0 : 1,
+      value: widget().highlighted ? 0 : 1,
       vsync: this,
     );
   }
 
   @override
   void didUpdateWidget(_SegmentSeparator oldWidget) {
-    assert(oldWidget.key == widget.key);
+    assert(oldWidget.key == widget().key);
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.highlighted != widget.highlighted) {
+    if (oldWidget.highlighted != widget().highlighted) {
       separatorOpacityController.animateTo(
-        widget.highlighted ? 0 : 1,
+        widget().highlighted ? 0 : 1,
         duration: _kSpringAnimationDuration,
         curve: Curves.ease,
       );
@@ -438,7 +438,7 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
     // Empty callback to enable the long press recognizer.
     longPress.onLongPress = () { };
 
-    highlighted = widget.groupValue;
+    highlighted = widget().groupValue;
   }
 
   @override
@@ -448,10 +448,10 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
     // Temporarily ignore highlight changes from the widget when the thumb is
     // being dragged. When the drag gesture finishes the widget will be forced
     // to build (see the onEnd method), and didUpdateWidget will be called again.
-    if (!isThumbDragging && highlighted != widget.groupValue) {
+    if (!isThumbDragging && highlighted != widget().groupValue) {
       thumbController.animateWith(_kThumbSpringAnimationSimulation);
       thumbAnimatable = null;
-      highlighted = widget.groupValue;
+      highlighted = widget().groupValue;
     }
   }
 
@@ -482,7 +482,7 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
   // the same width.
   T segmentForXPosition(double dx) {
     final RenderBox renderBox = context.findRenderObject()! as RenderBox;
-    final int numOfChildren = widget.children.length;
+    final int numOfChildren = widget().children.length;
     assert(renderBox.hasSize);
     assert(numOfChildren >= 2);
     int index = (dx ~/ (renderBox.size.width / numOfChildren)).clamp(0, numOfChildren - 1);
@@ -495,7 +495,7 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
         break;
     }
 
-    return widget.children.keys.elementAt(index);
+    return widget().children.keys.elementAt(index);
   }
 
   bool _hasDraggedTooFar(DragUpdateDetails details) {
@@ -549,8 +549,8 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
       return;
     final T segment = segmentForXPosition(details.localPosition.dx);
     onPressedChangedByGesture(null);
-    if (segment != widget.groupValue) {
-      widget.onValueChanged(segment);
+    if (segment != widget().groupValue) {
+      widget().onValueChanged(segment);
     }
   }
 
@@ -581,14 +581,14 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
     final T? pressed = this.pressed;
     if (isThumbDragging) {
       _playThumbScaleAnimation(isExpanding: true);
-      if (highlighted != widget.groupValue) {
-        widget.onValueChanged(highlighted);
+      if (highlighted != widget().groupValue) {
+        widget().onValueChanged(highlighted);
       }
     } else if (pressed != null) {
       onHighlightChangedByGesture(pressed);
       assert(pressed == highlighted);
-      if (highlighted != widget.groupValue) {
-        widget.onValueChanged(highlighted);
+      if (highlighted != widget().groupValue) {
+        widget().onValueChanged(highlighted);
       }
     }
 
@@ -618,13 +618,13 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
 
   @override
   Widget build(BuildContext context) {
-    assert(widget.children.length >= 2);
+    assert(widget().children.length >= 2);
     List<Widget> children = <Widget>[];
     bool isPreviousSegmentHighlighted = false;
 
     int index = 0;
     int? highlightedIndex;
-    for (final MapEntry<T, Widget> entry in widget.children.entries) {
+    for (final MapEntry<T, Widget> entry in widget().children.entries) {
       final bool isHighlighted = highlighted == entry.key;
       if (isHighlighted) {
         highlightedIndex = index;
@@ -644,9 +644,9 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
       children.add(
         Semantics(
           button: true,
-          onTap: () { widget.onValueChanged(entry.key); },
+          onTap: () { widget().onValueChanged(entry.key); },
           inMutuallyExclusiveGroup: true,
-          selected: widget.groupValue == entry.key,
+          selected: widget().groupValue == entry.key,
           child: _Segment<T>(
             key: ValueKey<T>(entry.key),
             highlighted: isHighlighted,
@@ -677,17 +677,17 @@ class _SegmentedControlState<T> extends State<CupertinoSlidingSegmentedControl<T
     return UnconstrainedBox(
       constrainedAxis: Axis.horizontal,
       child: Container(
-        padding: widget.padding.resolve(Directionality.of(context)),
+        padding: widget().padding.resolve(Directionality.of(context)),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(_kCornerRadius)),
-          color: CupertinoDynamicColor.resolve(widget.backgroundColor, context),
+          color: CupertinoDynamicColor.resolve(widget().backgroundColor, context),
         ),
         child: AnimatedBuilder(
           animation: thumbScaleAnimation,
           builder: (BuildContext context, Widget? child) {
             return _SegmentedControlRenderWidget<T>(
               highlightedIndex: highlightedIndex,
-              thumbColor: CupertinoDynamicColor.resolve(widget.thumbColor, context),
+              thumbColor: CupertinoDynamicColor.resolve(widget().thumbColor, context),
               thumbScale: thumbScaleAnimation.value,
               state: this,
               children: children,

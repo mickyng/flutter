@@ -383,7 +383,7 @@ class _OutlineButtonState extends State<_OutlineButton> with SingleTickerProvide
   @override
   void didUpdateWidget(_OutlineButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_pressed && !widget.enabled) {
+    if (_pressed && !widget().enabled) {
       _pressed = false;
       _controller.reverse();
     }
@@ -408,9 +408,9 @@ class _OutlineButtonState extends State<_OutlineButton> with SingleTickerProvide
   }
 
   Color _getFillColor() {
-    if (widget.highlightElevation == null || widget.highlightElevation == 0.0)
+    if (widget().highlightElevation == null || widget().highlightElevation == 0.0)
       return Colors.transparent;
-    final Color color = widget.color ?? Theme.of(context).canvasColor;
+    final Color color = widget().color ?? Theme.of(context).canvasColor;
     final Tween<Color?> colorTween = ColorTween(
       begin: color.withAlpha(0x00),
       end: color.withAlpha(0xFF),
@@ -421,33 +421,33 @@ class _OutlineButtonState extends State<_OutlineButton> with SingleTickerProvide
   Color? get _outlineColor {
     // If outline color is a `MaterialStateProperty`, it will be used in all
     // states, otherwise we determine the outline color in the current state.
-    if (widget.borderSide?.color is MaterialStateProperty<Color?>)
-      return widget.borderSide!.color;
-    if (!widget.enabled)
-      return widget.disabledBorderColor;
+    if (widget().borderSide?.color is MaterialStateProperty<Color?>)
+      return widget().borderSide!.color;
+    if (!widget().enabled)
+      return widget().disabledBorderColor;
     if (_pressed)
-      return widget.highlightedBorderColor;
-    return widget.borderSide?.color;
+      return widget().highlightedBorderColor;
+    return widget().borderSide?.color;
   }
 
   BorderSide _getOutline() {
-    if (widget.borderSide?.style == BorderStyle.none)
-      return widget.borderSide!;
+    if (widget().borderSide?.style == BorderStyle.none)
+      return widget().borderSide!;
 
     final Color themeColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.12);
 
     return BorderSide(
       color: _outlineColor ?? themeColor,
-      width: widget.borderSide?.width ?? 1.0,
+      width: widget().borderSide?.width ?? 1.0,
     );
   }
 
   double _getHighlightElevation() {
-    if (widget.highlightElevation == null || widget.highlightElevation == 0.0)
+    if (widget().highlightElevation == null || widget().highlightElevation == 0.0)
       return 0.0;
     return Tween<double>(
       begin: 0.0,
-      end: widget.highlightElevation,
+      end: widget().highlightElevation,
     ).evaluate(_elevationAnimation);
   }
 
@@ -459,35 +459,35 @@ class _OutlineButtonState extends State<_OutlineButton> with SingleTickerProvide
       animation: _controller,
       builder: (BuildContext context, Widget? child) {
         return RaisedButton(
-          autofocus: widget.autofocus,
-          textColor: widget.textColor,
-          disabledTextColor: widget.disabledTextColor,
+          autofocus: widget().autofocus,
+          textColor: widget().textColor,
+          disabledTextColor: widget().disabledTextColor,
           color: _getFillColor(),
-          splashColor: widget.splashColor,
-          focusColor: widget.focusColor,
-          hoverColor: widget.hoverColor,
-          highlightColor: widget.highlightColor,
+          splashColor: widget().splashColor,
+          focusColor: widget().focusColor,
+          hoverColor: widget().hoverColor,
+          highlightColor: widget().highlightColor,
           disabledColor: Colors.transparent,
-          onPressed: widget.onPressed,
-          onLongPress: widget.onLongPress,
-          mouseCursor: widget.mouseCursor,
+          onPressed: widget().onPressed,
+          onLongPress: widget().onLongPress,
+          mouseCursor: widget().mouseCursor,
           elevation: 0.0,
           disabledElevation: 0.0,
           focusElevation: 0.0,
           hoverElevation: 0.0,
           highlightElevation: _getHighlightElevation(),
           onHighlightChanged: _handleHighlightChanged,
-          padding: widget.padding,
-          visualDensity: widget.visualDensity ?? theme.visualDensity,
+          padding: widget().padding,
+          visualDensity: widget().visualDensity ?? theme.visualDensity,
           shape: _OutlineBorder(
-            shape: widget.shape,
+            shape: widget().shape,
             side: _getOutline(),
           ),
-          clipBehavior: widget.clipBehavior,
-          focusNode: widget.focusNode,
+          clipBehavior: widget().clipBehavior,
+          focusNode: widget().focusNode,
           animationDuration: _kElevationDuration,
-          materialTapTargetSize: widget.materialTapTargetSize,
-          child: widget.child,
+          materialTapTargetSize: widget().materialTapTargetSize,
+          child: widget().child,
         );
       },
     );

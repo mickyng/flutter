@@ -215,7 +215,7 @@ abstract class Route<T> {
   @mustCallSuper
   TickerFuture didPush() {
     return TickerFuture.complete()..then<void>((void _) {
-      if (navigator?.widget.requestFocus == true) {
+      if (navigator?.widget().requestFocus == true) {
         navigator!.focusScopeNode.requestFocus();
       }
     });
@@ -231,7 +231,7 @@ abstract class Route<T> {
   @protected
   @mustCallSuper
   void didAdd() {
-    if (navigator?.widget.requestFocus == true) {
+    if (navigator?.widget().requestFocus == true) {
       // This TickerFuture serves two purposes. First, we want to make sure
       // that animations triggered by other operations will finish before focusing the
       // navigator. Second, navigator.focusScopeNode might acquire more focused
@@ -414,7 +414,7 @@ abstract class Route<T> {
   /// affect routes, to indicate that the route may wish to rebuild as well.
   ///
   /// This is called by the [Navigator] whenever the
-  /// [NavigatorState]'s [State.widget] changes (as in [State.didUpdateWidget]),
+  /// [NavigatorState]'s [State.widget()] changes (as in [State.didUpdateWidget]),
   /// for example because the [MaterialApp] has been rebuilt. This
   /// ensures that routes that directly refer to the state of the
   /// widget that built the [MaterialApp] will be notified when that
@@ -3176,9 +3176,9 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
   void initState() {
     super.initState();
     assert(() {
-      if (widget.pages != const <Page<dynamic>>[]) {
+      if (widget().pages != const <Page<dynamic>>[]) {
         // This navigator uses page API.
-        if (widget.pages.isEmpty) {
+        if (widget().pages.isEmpty) {
           FlutterError.reportError(
             FlutterErrorDetails(
               exception: FlutterError(
@@ -3189,7 +3189,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
               stack: StackTrace.current,
             ),
           );
-        } else if (widget.onPopPage == null) {
+        } else if (widget().onPopPage == null) {
           FlutterError.reportError(
             FlutterErrorDetails(
               exception: FlutterError(
@@ -3204,11 +3204,11 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
       }
       return true;
     }());
-    for (final NavigatorObserver observer in widget.observers) {
+    for (final NavigatorObserver observer in widget().observers) {
       assert(observer.navigator == null);
       observer._navigator = this;
     }
-    _effectiveObservers = widget.observers;
+    _effectiveObservers = widget().observers;
 
     // We have to manually extract the inherited widget in initState because
     // the current context is not fully initialized.
@@ -3217,7 +3217,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
       ?.widget as HeroControllerScope?;
     _updateHeroController(heroControllerScope?.controller);
 
-    if (widget.reportsRouteUpdateToEngine) {
+    if (widget().reportsRouteUpdateToEngine) {
       SystemNavigator.selectSingleEntryHistory();
     }
   }
@@ -3241,7 +3241,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
 
     // Populate the new history from restoration data.
     _history.addAll(_serializableHistory.restoreEntriesForPage(null, this));
-    for (final Page<dynamic> page in widget.pages) {
+    for (final Page<dynamic> page in widget().pages) {
       final _RouteEntry entry = _RouteEntry(
         page.createRoute(context),
         initialState: _RouteLifecycle.add,
@@ -3257,15 +3257,15 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
 
     // If there was nothing to restore, we need to process the initial route.
     if (!_serializableHistory.hasData) {
-      String? initialRoute = widget.initialRoute;
-      if (widget.pages.isEmpty) {
+      String? initialRoute = widget().initialRoute;
+      if (widget().pages.isEmpty) {
         initialRoute = initialRoute ?? Navigator.defaultRouteName;
       }
       if (initialRoute != null) {
         _history.addAll(
-          widget.onGenerateInitialRoutes(
+          widget().onGenerateInitialRoutes(
             this,
-            widget.initialRoute ?? Navigator.defaultRouteName,
+            widget().initialRoute ?? Navigator.defaultRouteName,
           ).map((Route<dynamic> route) => _RouteEntry(
               route,
               initialState: _RouteLifecycle.add,
@@ -3305,7 +3305,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
     }
   }
   @override
-  String? get restorationId => widget.restorationScopeId;
+  String? get restorationId => widget().restorationScopeId;
 
   @override
   void didChangeDependencies() {
@@ -3368,18 +3368,18 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
 
   void _updateEffectiveObservers() {
     if (_heroControllerFromScope != null)
-      _effectiveObservers = widget.observers + <NavigatorObserver>[_heroControllerFromScope!];
+      _effectiveObservers = widget().observers + <NavigatorObserver>[_heroControllerFromScope!];
     else
-      _effectiveObservers = widget.observers;
+      _effectiveObservers = widget().observers;
   }
 
   @override
   void didUpdateWidget(Navigator oldWidget) {
     super.didUpdateWidget(oldWidget);
     assert(() {
-      if (widget.pages != const <Page<dynamic>>[]) {
+      if (widget().pages != const <Page<dynamic>>[]) {
         // This navigator uses page API.
-        if (widget.pages.isEmpty) {
+        if (widget().pages.isEmpty) {
           FlutterError.reportError(
             FlutterErrorDetails(
               exception: FlutterError(
@@ -3390,7 +3390,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
               stack: StackTrace.current,
             ),
           );
-        } else if (widget.onPopPage == null) {
+        } else if (widget().onPopPage == null) {
           FlutterError.reportError(
             FlutterErrorDetails(
               exception: FlutterError(
@@ -3405,18 +3405,18 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
       }
       return true;
     }());
-    if (oldWidget.observers != widget.observers) {
+    if (oldWidget.observers != widget().observers) {
       for (final NavigatorObserver observer in oldWidget.observers)
         observer._navigator = null;
-      for (final NavigatorObserver observer in widget.observers) {
+      for (final NavigatorObserver observer in widget().observers) {
         assert(observer.navigator == null);
         observer._navigator = this;
       }
       _updateEffectiveObservers();
     }
-    if (oldWidget.pages != widget.pages && !restorePending) {
+    if (oldWidget.pages != widget().pages && !restorePending) {
       assert(() {
-        if (widget.pages.isEmpty) {
+        if (widget().pages.isEmpty) {
           FlutterError.reportError(
             FlutterErrorDetails(
               exception: FlutterError(
@@ -3440,7 +3440,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
   void _debugCheckDuplicatedPageKeys() {
     assert(() {
       final Set<Key> keyReservation = <Key>{};
-      for (final Page<dynamic> page in widget.pages) {
+      for (final Page<dynamic> page in widget().pages) {
         final LocalKey? key = page.key;
         if (key != null) {
           assert(!keyReservation.contains(key));
@@ -3548,7 +3548,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
     bool needsExplicitDecision = false;
     int newPagesBottom = 0;
     int oldEntriesBottom = 0;
-    int newPagesTop = widget.pages.length - 1;
+    int newPagesTop = widget().pages.length - 1;
     int oldEntriesTop = _history.length - 1;
 
     final List<_RouteEntry> newHistory = <_RouteEntry>[];
@@ -3572,7 +3572,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
       }
       if (newPagesBottom > newPagesTop)
         break;
-      final Page<dynamic> newPage = widget.pages[newPagesBottom];
+      final Page<dynamic> newPage = widget().pages[newPagesBottom];
       if (!oldEntry.canUpdateFrom(newPage))
         break;
       previousOldPageRouteEntry = oldEntry;
@@ -3594,7 +3594,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
         oldEntriesTop -= 1;
         continue;
       }
-      final Page<dynamic> newPage = widget.pages[newPagesTop];
+      final Page<dynamic> newPage = widget().pages[newPagesTop];
       if (!oldEntry.canUpdateFrom(newPage))
         break;
       // We found the page for all the consecutive pageless routes below. Those
@@ -3633,7 +3633,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
 
     // Updates the middle of the list.
     while (newPagesBottom <= newPagesTop) {
-      final Page<dynamic> nextPage = widget.pages[newPagesBottom];
+      final Page<dynamic> nextPage = widget().pages[newPagesBottom];
       newPagesBottom += 1;
       if (
         nextPage.key == null ||
@@ -3700,7 +3700,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
     // We've scanned the whole list.
     assert(oldEntriesBottom == oldEntriesTop + 1);
     assert(newPagesBottom == newPagesTop + 1);
-    newPagesTop = widget.pages.length - 1;
+    newPagesTop = widget().pages.length - 1;
     oldEntriesTop = _history.length - 1;
     // Verifies we either reach the bottom or the oldEntriesBottom must be updatable
     // by newPagesBottom.
@@ -3708,7 +3708,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
       if (oldEntriesBottom <= oldEntriesTop)
         return newPagesBottom <= newPagesTop &&
           _history[oldEntriesBottom].hasPage &&
-          _history[oldEntriesBottom].canUpdateFrom(widget.pages[newPagesBottom]);
+          _history[oldEntriesBottom].canUpdateFrom(widget().pages[newPagesBottom]);
       else
         return newPagesBottom > newPagesTop;
     }());
@@ -3728,7 +3728,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
         continue;
       }
       previousOldPageRouteEntry = oldEntry;
-      final Page<dynamic> newPage = widget.pages[newPagesBottom];
+      final Page<dynamic> newPage = widget().pages[newPagesBottom];
       assert(oldEntry.canUpdateFrom(newPage));
       oldEntry.route._updateSettings(newPage);
       newHistory.add(oldEntry);
@@ -3740,7 +3740,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
     needsExplicitDecision = needsExplicitDecision || locationToExitingPageRoute.isNotEmpty;
     Iterable<_RouteEntry> results = newHistory;
     if (needsExplicitDecision) {
-      results = widget.transitionDelegate._transition(
+      results = widget().transitionDelegate._transition(
         newPageRouteHistory: newHistory,
         locationToExitingPageRoute: locationToExitingPageRoute,
         pageRouteToPagelessRoutes: pageRouteToPagelessRoutes,
@@ -3886,7 +3886,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
     _flushRouteAnnouncement();
 
     // Announce route name changes.
-    if (widget.reportsRouteUpdateToEngine) {
+    if (widget().reportsRouteUpdateToEngine) {
       final _RouteEntry? lastEntry = _history.cast<_RouteEntry?>().lastWhere(
         (_RouteEntry? e) => e != null && _RouteEntry.isPresentPredicate(e), orElse: () => null,
       );
@@ -3976,10 +3976,10 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
   Route<T>? _routeNamed<T>(String name, { required Object? arguments, bool allowNull = false }) {
     assert(!_debugLocked);
     assert(name != null);
-    if (allowNull && widget.onGenerateRoute == null)
+    if (allowNull && widget().onGenerateRoute == null)
       return null;
     assert(() {
-      if (widget.onGenerateRoute == null) {
+      if (widget().onGenerateRoute == null) {
         throw FlutterError(
           'Navigator.onGenerateRoute was null, but the route named "$name" was referenced.\n'
           'To use the Navigator API with named routes (pushNamed, pushReplacementNamed, or '
@@ -3995,10 +3995,10 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
       name: name,
       arguments: arguments,
     );
-    Route<T>? route = widget.onGenerateRoute!(settings) as Route<T>?;
+    Route<T>? route = widget().onGenerateRoute!(settings) as Route<T>?;
     if (route == null && !allowNull) {
       assert(() {
-        if (widget.onUnknownRoute == null) {
+        if (widget().onUnknownRoute == null) {
           throw FlutterError.fromParts(<DiagnosticsNode>[
             ErrorSummary('Navigator.onGenerateRoute returned null when requested to build route "$name".'),
             ErrorDescription(
@@ -4010,7 +4010,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
         }
         return true;
       }());
-      route = widget.onUnknownRoute!(settings) as Route<T>?;
+      route = widget().onUnknownRoute!(settings) as Route<T>?;
       assert(() {
         if (route == null) {
           throw FlutterError.fromParts(<DiagnosticsNode>[
@@ -4846,7 +4846,7 @@ class NavigatorState extends State<Navigator> with TickerProviderStateMixin, Res
     }());
     final _RouteEntry entry = _history.lastWhere(_RouteEntry.isPresentPredicate);
     if (entry.hasPage) {
-      if (widget.onPopPage!(entry.route, result))
+      if (widget().onPopPage!(entry.route, result))
         entry.currentState = _RouteLifecycle.pop;
     } else {
       entry.pop<T>(result);

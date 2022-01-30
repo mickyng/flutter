@@ -63,8 +63,8 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
   @override
   void initState() {
     super.initState();
-    if (widget.handlePaste != null) {
-      _clipboardStatus = widget.clipboardStatus ?? ClipboardStatusNotifier();
+    if (widget().handlePaste != null) {
+      _clipboardStatus = widget().clipboardStatus ?? ClipboardStatusNotifier();
       _clipboardStatus!.addListener(_onChangedClipboardStatus);
       _clipboardStatus!.update();
     }
@@ -73,14 +73,14 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
   @override
   void didUpdateWidget(_CupertinoTextSelectionControlsToolbar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.clipboardStatus != widget.clipboardStatus) {
+    if (oldWidget.clipboardStatus != widget().clipboardStatus) {
       if (_clipboardStatus != null) {
         _clipboardStatus!.removeListener(_onChangedClipboardStatus);
         _clipboardStatus!.dispose();
       }
-      _clipboardStatus = widget.clipboardStatus ?? ClipboardStatusNotifier();
+      _clipboardStatus = widget().clipboardStatus ?? ClipboardStatusNotifier();
       _clipboardStatus!.addListener(_onChangedClipboardStatus);
-      if (widget.handlePaste != null) {
+      if (widget().handlePaste != null) {
         _clipboardStatus!.update();
       }
     }
@@ -93,7 +93,7 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
     // already disposed _clipboardStatus.
     if (_clipboardStatus != null && !_clipboardStatus!.disposed) {
       _clipboardStatus!.removeListener(_onChangedClipboardStatus);
-      if (widget.clipboardStatus == null) {
+      if (widget().clipboardStatus == null) {
         _clipboardStatus!.dispose();
       }
     }
@@ -102,7 +102,7 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
   @override
   Widget build(BuildContext context) {
     // Don't render the menu until the state of the clipboard is known.
-    if (widget.handlePaste != null
+    if (widget().handlePaste != null
         && _clipboardStatus!.value == ClipboardStatus.unknown) {
       return const SizedBox(width: 0.0, height: 0.0);
     }
@@ -113,7 +113,7 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
     // The toolbar should appear below the TextField when there is not enough
     // space above the TextField to show it, assuming there's always enough
     // space at the bottom in this case.
-    final double anchorX = (widget.selectionMidpoint.dx + widget.globalEditableRegion.left).clamp(
+    final double anchorX = (widget().selectionMidpoint.dx + widget().globalEditableRegion.left).clamp(
       _kArrowScreenPadding + mediaQuery.padding.left,
       mediaQuery.size.width - mediaQuery.padding.right - _kArrowScreenPadding,
     );
@@ -124,11 +124,11 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
     // going to be facing up or down.
     final Offset anchorAbove = Offset(
       anchorX,
-      widget.endpoints.first.point.dy - widget.textLineHeight + widget.globalEditableRegion.top,
+      widget().endpoints.first.point.dy - widget().textLineHeight + widget().globalEditableRegion.top,
     );
     final Offset anchorBelow = Offset(
       anchorX,
-      widget.endpoints.last.point.dy + widget.globalEditableRegion.top,
+      widget().endpoints.last.point.dy + widget().globalEditableRegion.top,
     );
 
     final List<Widget> items = <Widget>[];
@@ -150,18 +150,18 @@ class _CupertinoTextSelectionControlsToolbarState extends State<_CupertinoTextSe
       ));
     }
 
-    if (widget.handleCut != null) {
-      addToolbarButton(localizations.cutButtonLabel, widget.handleCut!);
+    if (widget().handleCut != null) {
+      addToolbarButton(localizations.cutButtonLabel, widget().handleCut!);
     }
-    if (widget.handleCopy != null) {
-      addToolbarButton(localizations.copyButtonLabel, widget.handleCopy!);
+    if (widget().handleCopy != null) {
+      addToolbarButton(localizations.copyButtonLabel, widget().handleCopy!);
     }
-    if (widget.handlePaste != null
+    if (widget().handlePaste != null
         && _clipboardStatus!.value == ClipboardStatus.pasteable) {
-      addToolbarButton(localizations.pasteButtonLabel, widget.handlePaste!);
+      addToolbarButton(localizations.pasteButtonLabel, widget().handlePaste!);
     }
-    if (widget.handleSelectAll != null) {
-      addToolbarButton(localizations.selectAllButtonLabel, widget.handleSelectAll!);
+    if (widget().handleSelectAll != null) {
+      addToolbarButton(localizations.selectAllButtonLabel, widget().handleSelectAll!);
     }
 
     // If there is no option available, build an empty widget.

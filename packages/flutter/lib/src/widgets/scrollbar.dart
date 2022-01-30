@@ -1156,7 +1156,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   ///
   ///   * [RawScrollbar.isAlwaysShown], which overrides the default behavior.
   @protected
-  bool get showScrollbar => widget.isAlwaysShown ?? false;
+  bool get showScrollbar => widget().isAlwaysShown ?? false;
 
   /// Overridable getter to indicate is gestures should be enabled on the
   /// scrollbar.
@@ -1170,29 +1170,29 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   ///
   ///   * [RawScrollbar.interactive], which overrides the default behavior.
   @protected
-  bool get enableGestures => widget.interactive ?? true;
+  bool get enableGestures => widget().interactive ?? true;
 
   @override
   void initState() {
     super.initState();
     _fadeoutAnimationController = AnimationController(
       vsync: this,
-      duration: widget.fadeDuration,
+      duration: widget().fadeDuration,
     )..addStatusListener(_validateInteractions);
     _fadeoutOpacityAnimation = CurvedAnimation(
       parent: _fadeoutAnimationController,
       curve: Curves.fastOutSlowIn,
     );
     scrollbarPainter = ScrollbarPainter(
-      color: widget.thumbColor ?? const Color(0x66BCBCBC),
-      minLength: widget.minThumbLength,
-      minOverscrollLength: widget.minOverscrollLength ?? widget.minThumbLength,
-      thickness: widget.thickness ?? _kScrollbarThickness,
+      color: widget().thumbColor ?? const Color(0x66BCBCBC),
+      minLength: widget().minThumbLength,
+      minOverscrollLength: widget().minOverscrollLength ?? widget().minThumbLength,
+      thickness: widget().thickness ?? _kScrollbarThickness,
       fadeoutOpacityAnimation: _fadeoutOpacityAnimation,
-      scrollbarOrientation: widget.scrollbarOrientation,
-      mainAxisMargin: widget.mainAxisMargin,
-      shape: widget.shape,
-      crossAxisMargin: widget.crossAxisMargin
+      scrollbarOrientation: widget().scrollbarOrientation,
+      mainAxisMargin: widget().mainAxisMargin,
+      shape: widget().shape,
+      crossAxisMargin: widget().crossAxisMargin
     );
   }
 
@@ -1212,7 +1212,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   }
 
   void _validateInteractions(AnimationStatus status) {
-    final ScrollController? scrollController = widget.controller ?? PrimaryScrollController.of(context);
+    final ScrollController? scrollController = widget().controller ?? PrimaryScrollController.of(context);
     if (status == AnimationStatus.dismissed) {
       assert(_fadeoutOpacityAnimation.value == 0.0);
       // We do not check for a valid scroll position if the scrollbar is not
@@ -1225,8 +1225,8 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   }
 
   bool _debugCheckHasValidScrollPosition() {
-    final ScrollController? scrollController = widget.controller ?? PrimaryScrollController.of(context);
-    final bool tryPrimary = widget.controller == null;
+    final ScrollController? scrollController = widget().controller ?? PrimaryScrollController.of(context);
+    final bool tryPrimary = widget().controller == null;
     final String controllerForError = tryPrimary
       ? 'PrimaryScrollController'
       : 'provided ScrollController';
@@ -1310,31 +1310,31 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   }
 
   /// This method is responsible for configuring the [scrollbarPainter]
-  /// according to the [widget]'s properties and any inherited widgets the
+  /// according to the [widget()]'s properties and any inherited widgets the
   /// painter depends on, like [Directionality] and [MediaQuery].
   ///
   /// Subclasses can override to configure the [scrollbarPainter].
   @protected
   void updateScrollbarPainter() {
     scrollbarPainter
-      ..color = widget.thumbColor ?? const Color(0x66BCBCBC)
+      ..color = widget().thumbColor ?? const Color(0x66BCBCBC)
       ..textDirection = Directionality.of(context)
-      ..thickness = widget.thickness ?? _kScrollbarThickness
-      ..radius = widget.radius
+      ..thickness = widget().thickness ?? _kScrollbarThickness
+      ..radius = widget().radius
       ..padding = MediaQuery.of(context).padding
-      ..scrollbarOrientation = widget.scrollbarOrientation
-      ..mainAxisMargin = widget.mainAxisMargin
-      ..shape = widget.shape
-      ..crossAxisMargin = widget.crossAxisMargin
-      ..minLength = widget.minThumbLength
-      ..minOverscrollLength = widget.minOverscrollLength ?? widget.minThumbLength;
+      ..scrollbarOrientation = widget().scrollbarOrientation
+      ..mainAxisMargin = widget().mainAxisMargin
+      ..shape = widget().shape
+      ..crossAxisMargin = widget().crossAxisMargin
+      ..minLength = widget().minThumbLength
+      ..minOverscrollLength = widget().minOverscrollLength ?? widget().minThumbLength;
   }
 
   @override
   void didUpdateWidget(T oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isAlwaysShown != oldWidget.isAlwaysShown) {
-      if (widget.isAlwaysShown == true) {
+    if (widget().isAlwaysShown != oldWidget.isAlwaysShown) {
+      if (widget().isAlwaysShown == true) {
         assert(_debugScheduleCheckHasValidScrollPosition());
         _fadeoutTimer?.cancel();
         _fadeoutAnimationController.animateTo(1.0);
@@ -1396,7 +1396,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   void _maybeStartFadeoutTimer() {
     if (!showScrollbar) {
       _fadeoutTimer?.cancel();
-      _fadeoutTimer = Timer(widget.timeToFade, () {
+      _fadeoutTimer = Timer(widget().timeToFade, () {
         _fadeoutAnimationController.reverse();
         _fadeoutTimer = null;
       });
@@ -1433,7 +1433,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   @mustCallSuper
   void handleThumbPressStart(Offset localPosition) {
     assert(_debugCheckHasValidScrollPosition());
-    _currentController = widget.controller ?? PrimaryScrollController.of(context);
+    _currentController = widget().controller ?? PrimaryScrollController.of(context);
     final Axis? direction = getScrollbarDirection();
     if (direction == null) {
       return;
@@ -1475,13 +1475,13 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   void _handleTrackTapDown(TapDownDetails details) {
     // The Scrollbar should page towards the position of the tap on the track.
     assert(_debugCheckHasValidScrollPosition());
-    _currentController = widget.controller ?? PrimaryScrollController.of(context);
+    _currentController = widget().controller ?? PrimaryScrollController.of(context);
 
     double scrollIncrement;
     // Is an increment calculator available?
     final ScrollIncrementCalculator? calculator = Scrollable.of(
       _currentController!.position.context.notificationContext!,
-    )?.widget.incrementCalculator;
+    )?.widget().incrementCalculator;
     if (calculator != null) {
       scrollIncrement = calculator(
         ScrollIncrementDetails(
@@ -1523,7 +1523,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
 
   // ScrollController takes precedence over ScrollNotification
   bool _shouldUpdatePainter(Axis notificationAxis) {
-    final ScrollController? scrollController = widget.controller ??
+    final ScrollController? scrollController = widget().controller ??
         PrimaryScrollController.of(context);
     // Only update the painter of this scrollbar if the notification
     // metrics do not conflict with the information we have from the scroll
@@ -1546,7 +1546,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   }
 
   bool _handleScrollMetricsNotification(ScrollMetricsNotification notification) {
-    if (!widget.notificationPredicate(ScrollUpdateNotification(
+    if (!widget().notificationPredicate(ScrollUpdateNotification(
           metrics: notification.metrics,
           context: notification.context,
           depth: notification.depth,
@@ -1567,7 +1567,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
-    if (!widget.notificationPredicate(notification))
+    if (!widget().notificationPredicate(notification))
       return false;
 
     final ScrollMetrics metrics = notification.metrics;
@@ -1604,7 +1604,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
 
   Map<Type, GestureRecognizerFactory> get _gestures {
     final Map<Type, GestureRecognizerFactory> gestures = <Type, GestureRecognizerFactory>{};
-    final ScrollController? controller = widget.controller ?? PrimaryScrollController.of(context);
+    final ScrollController? controller = widget().controller ?? PrimaryScrollController.of(context);
     if (controller == null || !enableGestures)
       return gestures;
 
@@ -1613,7 +1613,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
         () => _ThumbPressGestureRecognizer(
           debugOwner: this,
           customPaintKey: _scrollbarPainterKey,
-          pressDuration: widget.pressDuration,
+          pressDuration: widget().pressDuration,
         ),
         (_ThumbPressGestureRecognizer instance) {
           instance.onLongPress = handleThumbPress;
@@ -1759,7 +1759,7 @@ class RawScrollbarState<T extends RawScrollbar> extends State<T> with TickerProv
               child: CustomPaint(
                 key: _scrollbarPainterKey,
                 foregroundPainter: scrollbarPainter,
-                child: RepaintBoundary(child: widget.child),
+                child: RepaintBoundary(child: widget().child),
               ),
             ),
           ),

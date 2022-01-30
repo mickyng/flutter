@@ -412,7 +412,7 @@ class _MonthPickerState extends State<MonthPicker> with SingleTickerProviderStat
   void initState() {
     super.initState();
     // Initially display the pre-selected date.
-    final int monthPage = _monthDelta(widget.firstDate, widget.selectedDate);
+    final int monthPage = _monthDelta(widget().firstDate, widget().selectedDate);
     _dayPickerController = PageController(initialPage: monthPage);
     _handleMonthPageChanged(monthPage);
     _updateCurrentDate();
@@ -427,8 +427,8 @@ class _MonthPickerState extends State<MonthPicker> with SingleTickerProviderStat
   @override
   void didUpdateWidget(MonthPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedDate != oldWidget.selectedDate) {
-      final int monthPage = _monthDelta(widget.firstDate, widget.selectedDate);
+    if (widget().selectedDate != oldWidget.selectedDate) {
+      final int monthPage = _monthDelta(widget().firstDate, widget().selectedDate);
       _dayPickerController = PageController(initialPage: monthPage);
       _handleMonthPageChanged(monthPage);
     }
@@ -474,17 +474,17 @@ class _MonthPickerState extends State<MonthPicker> with SingleTickerProviderStat
   }
 
   Widget _buildItems(BuildContext context, int index) {
-    final DateTime month = _addMonthsToMonthDate(widget.firstDate, index);
+    final DateTime month = _addMonthsToMonthDate(widget().firstDate, index);
     return DayPicker(
       key: ValueKey<DateTime>(month),
-      selectedDate: widget.selectedDate,
+      selectedDate: widget().selectedDate,
       currentDate: _todayDate,
-      onChanged: widget.onChanged,
-      firstDate: widget.firstDate,
-      lastDate: widget.lastDate,
+      onChanged: widget().onChanged,
+      firstDate: widget().firstDate,
+      lastDate: widget().lastDate,
       displayedMonth: month,
-      selectableDayPredicate: widget.selectableDayPredicate,
-      dragStartBehavior: widget.dragStartBehavior,
+      selectableDayPredicate: widget().selectableDayPredicate,
+      dragStartBehavior: widget().dragStartBehavior,
     );
   }
 
@@ -504,12 +504,12 @@ class _MonthPickerState extends State<MonthPicker> with SingleTickerProviderStat
 
   /// True if the earliest allowable month is displayed.
   bool get _isDisplayingFirstMonth {
-    return !_currentDisplayedMonthDate.isAfter(DateTime(widget.firstDate.year, widget.firstDate.month));
+    return !_currentDisplayedMonthDate.isAfter(DateTime(widget().firstDate.year, widget().firstDate.month));
   }
 
   /// True if the latest allowable month is displayed.
   bool get _isDisplayingLastMonth {
-    return !_currentDisplayedMonthDate.isBefore(DateTime(widget.lastDate.year, widget.lastDate.month));
+    return !_currentDisplayedMonthDate.isBefore(DateTime(widget().lastDate.year, widget().lastDate.month));
   }
 
   late DateTime _previousMonthDate;
@@ -517,9 +517,9 @@ class _MonthPickerState extends State<MonthPicker> with SingleTickerProviderStat
 
   void _handleMonthPageChanged(int monthPage) {
     setState(() {
-      _previousMonthDate = _addMonthsToMonthDate(widget.firstDate, monthPage - 1);
-      _currentDisplayedMonthDate = _addMonthsToMonthDate(widget.firstDate, monthPage);
-      _nextMonthDate = _addMonthsToMonthDate(widget.firstDate, monthPage + 1);
+      _previousMonthDate = _addMonthsToMonthDate(widget().firstDate, monthPage - 1);
+      _currentDisplayedMonthDate = _addMonthsToMonthDate(widget().firstDate, monthPage);
+      _nextMonthDate = _addMonthsToMonthDate(widget().firstDate, monthPage + 1);
     });
   }
 
@@ -544,10 +544,10 @@ class _MonthPickerState extends State<MonthPicker> with SingleTickerProviderStat
                   return false;
                 },
                 child: PageView.builder(
-                  dragStartBehavior: widget.dragStartBehavior,
-                  key: ValueKey<DateTime>(widget.selectedDate),
+                  dragStartBehavior: widget().dragStartBehavior,
+                  key: ValueKey<DateTime>(widget().selectedDate),
                   controller: _dayPickerController,
-                  itemCount: _monthDelta(widget.firstDate, widget.lastDate) + 1,
+                  itemCount: _monthDelta(widget().firstDate, widget().lastDate) + 1,
                   itemBuilder: _buildItems,
                   onPageChanged: _handleMonthPageChanged,
                 ),

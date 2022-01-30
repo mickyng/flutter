@@ -382,8 +382,8 @@ class _DefaultTabControllerState extends State<DefaultTabController> with Single
     super.initState();
     _controller = TabController(
       vsync: this,
-      length: widget.length,
-      initialIndex: widget.initialIndex,
+      length: widget().length,
+      initialIndex: widget().initialIndex,
     );
   }
 
@@ -398,24 +398,24 @@ class _DefaultTabControllerState extends State<DefaultTabController> with Single
     return _TabControllerScope(
       controller: _controller,
       enabled: TickerMode.of(context),
-      child: widget.child,
+      child: widget().child,
     );
   }
 
   @override
   void didUpdateWidget(DefaultTabController oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.length != widget.length) {
+    if (oldWidget.length != widget().length) {
       // If the length is shortened while the last tab is selected, we should
       // automatically update the index of the controller to be the new last tab.
       int? newIndex;
       int previousIndex = _controller.previousIndex;
-      if (_controller.index >= widget.length) {
-        newIndex = math.max(0, widget.length - 1);
+      if (_controller.index >= widget().length) {
+        newIndex = math.max(0, widget().length - 1);
         previousIndex = _controller.index;
       }
       _controller = _controller._copyWith(
-        length: widget.length,
+        length: widget().length,
         index: newIndex,
         previousIndex: previousIndex,
       );

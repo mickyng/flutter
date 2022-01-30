@@ -319,13 +319,13 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
   @override
   void initState() {
     super.initState();
-    _previousValue = widget.value;
+    _previousValue = widget().value;
   }
 
   @override
   void didUpdateWidget(Checkbox oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
+    if (oldWidget.value != widget().value) {
       _previousValue = oldWidget.value;
       animateToValue();
     }
@@ -338,13 +338,13 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
   }
 
   @override
-  ValueChanged<bool?>? get onChanged => widget.onChanged;
+  ValueChanged<bool?>? get onChanged => widget().onChanged;
 
   @override
-  bool get tristate => widget.tristate;
+  bool get tristate => widget().tristate;
 
   @override
-  bool? get value => widget.value;
+  bool? get value => widget().value;
 
   MaterialStateProperty<Color?> get _widgetFillColor {
     return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
@@ -352,7 +352,7 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
         return null;
       }
       if (states.contains(MaterialState.selected)) {
-        return widget.activeColor;
+        return widget().activeColor;
       }
       return null;
     });
@@ -383,10 +383,10 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     final ThemeData themeData = Theme.of(context);
-    final MaterialTapTargetSize effectiveMaterialTapTargetSize = widget.materialTapTargetSize
+    final MaterialTapTargetSize effectiveMaterialTapTargetSize = widget().materialTapTargetSize
       ?? themeData.checkboxTheme.materialTapTargetSize
       ?? themeData.materialTapTargetSize;
-    final VisualDensity effectiveVisualDensity = widget.visualDensity
+    final VisualDensity effectiveVisualDensity = widget().visualDensity
       ?? themeData.checkboxTheme.visualDensity
       ?? themeData.visualDensity;
     Size size;
@@ -401,7 +401,7 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
     size += effectiveVisualDensity.baseSizeAdjustment;
 
     final MaterialStateProperty<MouseCursor> effectiveMouseCursor = MaterialStateProperty.resolveWith<MouseCursor>((Set<MaterialState> states) {
-      return MaterialStateProperty.resolveAs<MouseCursor?>(widget.mouseCursor, states)
+      return MaterialStateProperty.resolveAs<MouseCursor?>(widget().mouseCursor, states)
         ?? themeData.checkboxTheme.mouseCursor?.resolve(states)
         ?? MaterialStateMouseCursor.clickable.resolve(states);
     });
@@ -410,47 +410,47 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
     // so that they can be lerped between.
     final Set<MaterialState> activeStates = states..add(MaterialState.selected);
     final Set<MaterialState> inactiveStates = states..remove(MaterialState.selected);
-    final Color effectiveActiveColor = widget.fillColor?.resolve(activeStates)
+    final Color effectiveActiveColor = widget().fillColor?.resolve(activeStates)
       ?? _widgetFillColor.resolve(activeStates)
       ?? themeData.checkboxTheme.fillColor?.resolve(activeStates)
       ?? _defaultFillColor.resolve(activeStates);
-    final Color effectiveInactiveColor = widget.fillColor?.resolve(inactiveStates)
+    final Color effectiveInactiveColor = widget().fillColor?.resolve(inactiveStates)
       ?? _widgetFillColor.resolve(inactiveStates)
       ?? themeData.checkboxTheme.fillColor?.resolve(inactiveStates)
       ?? _defaultFillColor.resolve(inactiveStates);
 
     final Set<MaterialState> focusedStates = states..add(MaterialState.focused);
-    final Color effectiveFocusOverlayColor = widget.overlayColor?.resolve(focusedStates)
-      ?? widget.focusColor
+    final Color effectiveFocusOverlayColor = widget().overlayColor?.resolve(focusedStates)
+      ?? widget().focusColor
       ?? themeData.checkboxTheme.overlayColor?.resolve(focusedStates)
       ?? themeData.focusColor;
 
     final Set<MaterialState> hoveredStates = states..add(MaterialState.hovered);
-    final Color effectiveHoverOverlayColor = widget.overlayColor?.resolve(hoveredStates)
-        ?? widget.hoverColor
+    final Color effectiveHoverOverlayColor = widget().overlayColor?.resolve(hoveredStates)
+        ?? widget().hoverColor
         ?? themeData.checkboxTheme.overlayColor?.resolve(hoveredStates)
         ?? themeData.hoverColor;
 
     final Set<MaterialState> activePressedStates = activeStates..add(MaterialState.pressed);
-    final Color effectiveActivePressedOverlayColor = widget.overlayColor?.resolve(activePressedStates)
+    final Color effectiveActivePressedOverlayColor = widget().overlayColor?.resolve(activePressedStates)
         ?? themeData.checkboxTheme.overlayColor?.resolve(activePressedStates)
         ?? effectiveActiveColor.withAlpha(kRadialReactionAlpha);
 
     final Set<MaterialState> inactivePressedStates = inactiveStates..add(MaterialState.pressed);
-    final Color effectiveInactivePressedOverlayColor = widget.overlayColor?.resolve(inactivePressedStates)
+    final Color effectiveInactivePressedOverlayColor = widget().overlayColor?.resolve(inactivePressedStates)
         ?? themeData.checkboxTheme.overlayColor?.resolve(inactivePressedStates)
         ?? effectiveActiveColor.withAlpha(kRadialReactionAlpha);
 
-    final Color effectiveCheckColor = widget.checkColor
+    final Color effectiveCheckColor = widget().checkColor
       ?? themeData.checkboxTheme.checkColor?.resolve(states)
       ?? const Color(0xFFFFFFFF);
 
     return Semantics(
-      checked: widget.value == true,
+      checked: widget().value == true,
       child: buildToggleable(
         mouseCursor: effectiveMouseCursor,
-        focusNode: widget.focusNode,
-        autofocus: widget.autofocus,
+        focusNode: widget().focusNode,
+        autofocus: widget().autofocus,
         size: size,
         painter: _painter
           ..position = position
@@ -461,7 +461,7 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
           ..reactionColor = effectiveActivePressedOverlayColor
           ..hoverColor = effectiveHoverOverlayColor
           ..focusColor = effectiveFocusOverlayColor
-          ..splashRadius = widget.splashRadius ?? themeData.checkboxTheme.splashRadius ?? kRadialReactionRadius
+          ..splashRadius = widget().splashRadius ?? themeData.checkboxTheme.splashRadius ?? kRadialReactionRadius
           ..downPosition = downPosition
           ..isFocused = states.contains(MaterialState.focused)
           ..isHovered = states.contains(MaterialState.hovered)
@@ -470,10 +470,10 @@ class _CheckboxState extends State<Checkbox> with TickerProviderStateMixin, Togg
           ..checkColor = effectiveCheckColor
           ..value = value
           ..previousValue = _previousValue
-          ..shape = widget.shape ?? themeData.checkboxTheme.shape ?? const RoundedRectangleBorder(
+          ..shape = widget().shape ?? themeData.checkboxTheme.shape ?? const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(1.0)),
           )
-          ..side = _resolveSide(widget.side) ?? _resolveSide(themeData.checkboxTheme.side),
+          ..side = _resolveSide(widget().side) ?? _resolveSide(themeData.checkboxTheme.side),
       ),
     );
   }

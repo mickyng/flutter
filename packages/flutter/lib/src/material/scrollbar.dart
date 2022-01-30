@@ -210,12 +210,12 @@ class _MaterialScrollbarState extends RawScrollbarState<_MaterialScrollbar> {
   late bool _useAndroidScrollbar;
 
   @override
-  bool get showScrollbar => widget.isAlwaysShown ?? _scrollbarTheme.isAlwaysShown ?? false;
+  bool get showScrollbar => widget().isAlwaysShown ?? _scrollbarTheme.isAlwaysShown ?? false;
 
   @override
-  bool get enableGestures => widget.interactive ?? _scrollbarTheme.interactive ?? !_useAndroidScrollbar;
+  bool get enableGestures => widget().interactive ?? _scrollbarTheme.interactive ?? !_useAndroidScrollbar;
 
-  bool get _showTrackOnHover => widget.showTrackOnHover ?? _scrollbarTheme.showTrackOnHover ?? false;
+  bool get _showTrackOnHover => widget().showTrackOnHover ?? _scrollbarTheme.showTrackOnHover ?? false;
 
   Set<MaterialState> get _states => <MaterialState>{
     if (_dragIsActive) MaterialState.dragged,
@@ -293,11 +293,11 @@ class _MaterialScrollbarState extends RawScrollbarState<_MaterialScrollbar> {
   MaterialStateProperty<double> get _thickness {
     return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
       if (states.contains(MaterialState.hovered) && _showTrackOnHover)
-        return widget.hoverThickness
+        return widget().hoverThickness
           ?? _scrollbarTheme.thickness?.resolve(states)
           ?? _kScrollbarThicknessWithTrack;
       // The default scrollbar thickness is smaller on mobile.
-      return widget.thickness
+      return widget().thickness
         ?? _scrollbarTheme.thickness?.resolve(states)
         ?? (_kScrollbarThickness / (_useAndroidScrollbar ? 2 : 1));
     });
@@ -343,12 +343,12 @@ class _MaterialScrollbarState extends RawScrollbarState<_MaterialScrollbar> {
       ..trackBorderColor = _trackBorderColor.resolve(_states)
       ..textDirection = Directionality.of(context)
       ..thickness = _thickness.resolve(_states)
-      ..radius = widget.radius ?? _scrollbarTheme.radius ?? (_useAndroidScrollbar ? null : _kScrollbarRadius)
+      ..radius = widget().radius ?? _scrollbarTheme.radius ?? (_useAndroidScrollbar ? null : _kScrollbarRadius)
       ..crossAxisMargin = _scrollbarTheme.crossAxisMargin ?? (_useAndroidScrollbar ? 0.0 : _kScrollbarMargin)
       ..mainAxisMargin = _scrollbarTheme.mainAxisMargin ?? 0.0
       ..minLength = _scrollbarTheme.minThumbLength ?? _kScrollbarMinLength
       ..padding = MediaQuery.of(context).padding
-      ..scrollbarOrientation = widget.scrollbarOrientation;
+      ..scrollbarOrientation = widget().scrollbarOrientation;
   }
 
   @override

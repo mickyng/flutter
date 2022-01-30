@@ -477,7 +477,7 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
   // Action mapping for a focused slider.
   late Map<Type, Action<Intent>> _actionMap;
 
-  bool get _enabled => widget.onChanged != null;
+  bool get _enabled => widget().onChanged != null;
   // Value Indicator Animation that appears on the Overlay.
   PaintValueIndicator? paintValueIndicator;
 
@@ -500,8 +500,8 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
       duration: Duration.zero,
       vsync: this,
     );
-    enableController.value = widget.onChanged != null ? 1.0 : 0.0;
-    positionController.value = _unlerp(widget.value);
+    enableController.value = widget().onChanged != null ? 1.0 : 0.0;
+    positionController.value = _unlerp(widget().value);
     _actionMap = <Type, Action<Intent>>{
       _AdjustSliderIntent: CallbackAction<_AdjustSliderIntent>(
         onInvoke: _actionHandler,
@@ -524,21 +524,21 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
   }
 
   void _handleChanged(double value) {
-    assert(widget.onChanged != null);
+    assert(widget().onChanged != null);
     final double lerpValue = _lerp(value);
-    if (lerpValue != widget.value) {
-      widget.onChanged!(lerpValue);
+    if (lerpValue != widget().value) {
+      widget().onChanged!(lerpValue);
     }
   }
 
   void _handleDragStart(double value) {
-    assert(widget.onChangeStart != null);
-    widget.onChangeStart!(_lerp(value));
+    assert(widget().onChangeStart != null);
+    widget().onChangeStart!(_lerp(value));
   }
 
   void _handleDragEnd(double value) {
-    assert(widget.onChangeEnd != null);
-    widget.onChangeEnd!(_lerp(value));
+    assert(widget().onChangeEnd != null);
+    widget().onChangeEnd!(_lerp(value));
   }
 
   void _actionHandler(_AdjustSliderIntent intent) {
@@ -593,14 +593,14 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
   double _lerp(double value) {
     assert(value >= 0.0);
     assert(value <= 1.0);
-    return value * (widget.max - widget.min) + widget.min;
+    return value * (widget().max - widget().min) + widget().min;
   }
 
   // Returns a number between 0.0 and 1.0, given a value between min and max.
   double _unlerp(double value) {
-    assert(value <= widget.max);
-    assert(value >= widget.min);
-    return widget.max > widget.min ? (value - widget.min) / (widget.max - widget.min) : 0.0;
+    assert(value <= widget().max);
+    assert(value >= widget().min);
+    return widget().max > widget().min ? (value - widget().min) / (widget().max - widget().min) : 0.0;
   }
 
   @override
@@ -608,7 +608,7 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
     assert(debugCheckHasMaterial(context));
     assert(debugCheckHasMediaQuery(context));
 
-    switch (widget._sliderType) {
+    switch (widget()._sliderType) {
       case _SliderType.material:
         return _buildMaterialSlider(context);
 
@@ -657,22 +657,22 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
     if (valueIndicatorShape is RectangularSliderValueIndicatorShape) {
       valueIndicatorColor = sliderTheme.valueIndicatorColor ?? Color.alphaBlend(theme.colorScheme.onSurface.withOpacity(0.60), theme.colorScheme.surface.withOpacity(0.90));
     } else {
-      valueIndicatorColor = widget.activeColor ?? sliderTheme.valueIndicatorColor ?? theme.colorScheme.primary;
+      valueIndicatorColor = widget().activeColor ?? sliderTheme.valueIndicatorColor ?? theme.colorScheme.primary;
     }
 
     sliderTheme = sliderTheme.copyWith(
       trackHeight: sliderTheme.trackHeight ?? _defaultTrackHeight,
-      activeTrackColor: widget.activeColor ?? sliderTheme.activeTrackColor ?? theme.colorScheme.primary,
-      inactiveTrackColor: widget.inactiveColor ?? sliderTheme.inactiveTrackColor ?? theme.colorScheme.primary.withOpacity(0.24),
+      activeTrackColor: widget().activeColor ?? sliderTheme.activeTrackColor ?? theme.colorScheme.primary,
+      inactiveTrackColor: widget().inactiveColor ?? sliderTheme.inactiveTrackColor ?? theme.colorScheme.primary.withOpacity(0.24),
       disabledActiveTrackColor: sliderTheme.disabledActiveTrackColor ?? theme.colorScheme.onSurface.withOpacity(0.32),
       disabledInactiveTrackColor: sliderTheme.disabledInactiveTrackColor ?? theme.colorScheme.onSurface.withOpacity(0.12),
-      activeTickMarkColor: widget.inactiveColor ?? sliderTheme.activeTickMarkColor ?? theme.colorScheme.onPrimary.withOpacity(0.54),
-      inactiveTickMarkColor: widget.activeColor ?? sliderTheme.inactiveTickMarkColor ?? theme.colorScheme.primary.withOpacity(0.54),
+      activeTickMarkColor: widget().inactiveColor ?? sliderTheme.activeTickMarkColor ?? theme.colorScheme.onPrimary.withOpacity(0.54),
+      inactiveTickMarkColor: widget().activeColor ?? sliderTheme.inactiveTickMarkColor ?? theme.colorScheme.primary.withOpacity(0.54),
       disabledActiveTickMarkColor: sliderTheme.disabledActiveTickMarkColor ?? theme.colorScheme.onPrimary.withOpacity(0.12),
       disabledInactiveTickMarkColor: sliderTheme.disabledInactiveTickMarkColor ?? theme.colorScheme.onSurface.withOpacity(0.12),
-      thumbColor: widget.thumbColor ?? widget.activeColor ?? sliderTheme.thumbColor ?? theme.colorScheme.primary,
+      thumbColor: widget().thumbColor ?? widget().activeColor ?? sliderTheme.thumbColor ?? theme.colorScheme.primary,
       disabledThumbColor: sliderTheme.disabledThumbColor ?? Color.alphaBlend(theme.colorScheme.onSurface.withOpacity(.38), theme.colorScheme.surface),
-      overlayColor: widget.activeColor?.withOpacity(0.12) ?? sliderTheme.overlayColor ?? theme.colorScheme.primary.withOpacity(0.12),
+      overlayColor: widget().activeColor?.withOpacity(0.12) ?? sliderTheme.overlayColor ?? theme.colorScheme.primary.withOpacity(0.12),
       valueIndicatorColor: valueIndicatorColor,
       trackShape: sliderTheme.trackShape ?? _defaultTrackShape,
       tickMarkShape: sliderTheme.tickMarkShape ?? _defaultTickMarkShape,
@@ -685,7 +685,7 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
       ),
     );
     final MouseCursor effectiveMouseCursor = MaterialStateProperty.resolveAs<MouseCursor>(
-      widget.mouseCursor ?? MaterialStateMouseCursor.clickable,
+      widget().mouseCursor ?? MaterialStateMouseCursor.clickable,
       <MaterialState>{
         if (!_enabled) MaterialState.disabled,
         if (_hovering) MaterialState.hovered,
@@ -704,8 +704,8 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
       child: FocusableActionDetector(
         actions: _actionMap,
         shortcuts: _shortcutMap,
-        focusNode: widget.focusNode,
-        autofocus: widget.autofocus,
+        focusNode: widget().focusNode,
+        autofocus: widget().autofocus,
         enabled: _enabled,
         onShowFocusHighlight: _handleFocusHighlightChanged,
         onShowHoverHighlight: _handleHoverChanged,
@@ -714,17 +714,17 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
           link: _layerLink,
           child: _SliderRenderObjectWidget(
             key: _renderObjectKey,
-            value: _unlerp(widget.value),
-            divisions: widget.divisions,
-            label: widget.label,
+            value: _unlerp(widget().value),
+            divisions: widget().divisions,
+            label: widget().label,
             sliderTheme: sliderTheme,
             textScaleFactor: MediaQuery.of(context).textScaleFactor,
             screenSize: _screenSize(),
-            onChanged: (widget.onChanged != null) && (widget.max > widget.min) ? _handleChanged : null,
-            onChangeStart: widget.onChangeStart != null ? _handleDragStart : null,
-            onChangeEnd: widget.onChangeEnd != null ? _handleDragEnd : null,
+            onChanged: (widget().onChanged != null) && (widget().max > widget().min) ? _handleChanged : null,
+            onChangeStart: widget().onChangeStart != null ? _handleDragStart : null,
+            onChangeEnd: widget().onChangeEnd != null ? _handleDragEnd : null,
             state: this,
-            semanticFormatterCallback: widget.semanticFormatterCallback,
+            semanticFormatterCallback: widget().semanticFormatterCallback,
             hasFocus: _focused,
             hovering: _hovering,
           ),
@@ -740,15 +740,15 @@ class _SliderState extends State<Slider> with TickerProviderStateMixin {
     return SizedBox(
       width: double.infinity,
       child: CupertinoSlider(
-        value: widget.value,
-        onChanged: widget.onChanged,
-        onChangeStart: widget.onChangeStart,
-        onChangeEnd: widget.onChangeEnd,
-        min: widget.min,
-        max: widget.max,
-        divisions: widget.divisions,
-        activeColor: widget.activeColor,
-        thumbColor: widget.thumbColor ?? CupertinoColors.white,
+        value: widget().value,
+        onChanged: widget().onChanged,
+        onChangeStart: widget().onChangeStart,
+        onChangeEnd: widget().onChangeEnd,
+        min: widget().min,
+        max: widget().max,
+        divisions: widget().divisions,
+        activeColor: widget().activeColor,
+        thumbColor: widget().thumbColor ?? CupertinoColors.white,
       ),
     );
   }

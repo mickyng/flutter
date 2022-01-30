@@ -1026,7 +1026,7 @@ class _MediaQueryFromWindowState extends State<_MediaQueryFromWindow> with Widge
     }
     return MediaQuery(
       data: data,
-      child: widget.child,
+      child: widget().child,
     );
   }
 

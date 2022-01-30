@@ -83,12 +83,12 @@ class _CupertinoContextMenuActionState extends State<CupertinoContextMenuAction>
   }
 
   TextStyle get _textStyle {
-    if (widget.isDefaultAction) {
+    if (widget().isDefaultAction) {
       return _kActionSheetActionStyle.copyWith(
         fontWeight: FontWeight.w600,
       );
     }
-    if (widget.isDestructiveAction) {
+    if (widget().isDestructiveAction) {
       return _kActionSheetActionStyle.copyWith(
         color: CupertinoColors.destructiveRed,
       );
@@ -104,7 +104,7 @@ class _CupertinoContextMenuActionState extends State<CupertinoContextMenuAction>
       onTapDown: onTapDown,
       onTapUp: onTapUp,
       onTapCancel: onTapCancel,
-      onTap: widget.onPressed,
+      onTap: widget().onPressed,
       behavior: HitTestBehavior.opaque,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
@@ -129,11 +129,11 @@ class _CupertinoContextMenuActionState extends State<CupertinoContextMenuAction>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Flexible(
-                    child: widget.child,
+                    child: widget().child,
                   ),
-                  if (widget.trailingIcon != null)
+                  if (widget().trailingIcon != null)
                     Icon(
-                      widget.trailingIcon,
+                      widget().trailingIcon,
                       color: _textStyle.color,
                     ),
                 ],

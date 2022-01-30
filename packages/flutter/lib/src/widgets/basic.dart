@@ -6352,12 +6352,12 @@ class MouseRegion extends StatefulWidget {
 
 class _MouseRegionState extends State<MouseRegion> {
   void handleExit(PointerExitEvent event) {
-    if (widget.onExit != null && mounted)
-      widget.onExit!(event);
+    if (widget().onExit != null && mounted)
+      widget().onExit!(event);
   }
 
   PointerExitEventListener? getHandleExit() {
-    return widget.onExit == null ? null : handleExit;
+    return widget().onExit == null ? null : handleExit;
   }
 
   @override
@@ -6367,13 +6367,13 @@ class _MouseRegionState extends State<MouseRegion> {
 }
 
 class _RawMouseRegion extends SingleChildRenderObjectWidget {
-  _RawMouseRegion(this.owner) : super(child: owner.widget.child);
+  _RawMouseRegion(this.owner) : super(child: owner.widget().child);
 
   final _MouseRegionState owner;
 
   @override
   RenderMouseRegion createRenderObject(BuildContext context) {
-    final MouseRegion widget = owner.widget;
+    final MouseRegion widget = owner.widget();
     return RenderMouseRegion(
       onEnter: widget.onEnter,
       onHover: widget.onHover,
@@ -6385,7 +6385,7 @@ class _RawMouseRegion extends SingleChildRenderObjectWidget {
 
   @override
   void updateRenderObject(BuildContext context, RenderMouseRegion renderObject) {
-    final MouseRegion widget = owner.widget;
+    final MouseRegion widget = owner.widget();
     renderObject
       ..onEnter = widget.onEnter
       ..onHover = widget.onHover
@@ -7465,7 +7465,7 @@ class StatefulBuilder extends StatefulWidget {
 
 class _StatefulBuilderState extends State<StatefulBuilder> {
   @override
-  Widget build(BuildContext context) => widget.builder(context, setState);
+  Widget build(BuildContext context) => widget().builder(context, setState);
 }
 
 /// A widget that paints its area with a specified [Color] and then draws its

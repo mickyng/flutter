@@ -240,7 +240,7 @@ class _CupertinoContextMenuState extends State<CupertinoContextMenu> with Ticker
     });
 
     _route = _ContextMenuRoute<void>(
-      actions: widget.actions,
+      actions: widget().actions,
       barrierLabel: 'Dismiss',
       filter: ui.ImageFilter.blur(
         sigmaX: 5.0,
@@ -249,10 +249,10 @@ class _CupertinoContextMenuState extends State<CupertinoContextMenu> with Ticker
       contextMenuLocation: _contextMenuLocation,
       previousChildRect: _decoyChildEndRect!,
       builder: (BuildContext context, Animation<double> animation) {
-        if (widget.previewBuilder == null) {
-          return widget.child;
+        if (widget().previewBuilder == null) {
+          return widget().child;
         }
-        return widget.previewBuilder!(context, animation, widget.child);
+        return widget().previewBuilder!(context, animation, widget().child);
       },
     );
     Navigator.of(context, rootNavigator: true).push<void>(_route!);
@@ -350,7 +350,7 @@ class _CupertinoContextMenuState extends State<CupertinoContextMenu> with Ticker
           beginRect: childRect,
           controller: _openController,
           endRect: _decoyChildEndRect,
-          child: widget.child,
+          child: widget().child,
         );
       },
     );
@@ -370,7 +370,7 @@ class _CupertinoContextMenuState extends State<CupertinoContextMenu> with Ticker
         child: Opacity(
           key: _childGlobalKey,
           opacity: _childHidden ? 0.0 : 1.0,
-          child: widget.child,
+          child: widget().child,
         ),
       ),
     );
@@ -424,20 +424,20 @@ class _DecoyChildState extends State<_DecoyChild> with TickerProviderStateMixin 
     // Change the color of the child during the initial part of the decoy bounce
     // animation. The interval was eyeballed from a physical iOS 13.1.2 device.
     _mask = _OnOffAnimation<Color>(
-      controller: widget.controller,
+      controller: widget().controller,
       onValue: _lightModeMaskColor,
       offValue: _masklessColor,
       intervalOn: 0.0,
       intervalOff: 0.5,
     );
 
-    final Rect midRect =  widget.beginRect!.deflate(
-      widget.beginRect!.width * (_kOpenScale - 1.0) / 2,
+    final Rect midRect =  widget().beginRect!.deflate(
+      widget().beginRect!.width * (_kOpenScale - 1.0) / 2,
     );
     _rect = TweenSequence<Rect?>(<TweenSequenceItem<Rect?>>[
       TweenSequenceItem<Rect?>(
         tween: RectTween(
-          begin: widget.beginRect,
+          begin: widget().beginRect,
           end: midRect,
         ).chain(CurveTween(curve: Curves.easeInOutCubic)),
         weight: 1.0,
@@ -445,18 +445,18 @@ class _DecoyChildState extends State<_DecoyChild> with TickerProviderStateMixin 
       TweenSequenceItem<Rect?>(
         tween: RectTween(
           begin: midRect,
-          end: widget.endRect,
+          end: widget().endRect,
         ).chain(CurveTween(curve: Curves.easeOutCubic)),
         weight: 1.0,
       ),
-    ]).animate(widget.controller);
+    ]).animate(widget().controller);
     _rect.addListener(_rectListener);
   }
 
   // Listen to the _rect animation and vibrate when it reaches the halfway point
   // and switches from animating down to up.
   void _rectListener() {
-    if (widget.controller.value < 0.5) {
+    if (widget().controller.value < 0.5) {
       return;
     }
     HapticFeedback.selectionClick();
@@ -470,7 +470,7 @@ class _DecoyChildState extends State<_DecoyChild> with TickerProviderStateMixin 
   }
 
   Widget _buildAnimation(BuildContext context, Widget? child) {
-    final Color color = widget.controller.status == AnimationStatus.reverse
+    final Color color = widget().controller.status == AnimationStatus.reverse
       ? _masklessColor
       : _mask.value;
     return Positioned.fromRect(
@@ -484,7 +484,7 @@ class _DecoyChildState extends State<_DecoyChild> with TickerProviderStateMixin 
             colors: <Color>[color, color],
           ).createShader(bounds);
         },
-        child: widget.child,
+        child: widget().child,
       ),
     );
   }
@@ -495,7 +495,7 @@ class _DecoyChildState extends State<_DecoyChild> with TickerProviderStateMixin 
       children: <Widget>[
         AnimatedBuilder(
           builder: _buildAnimation,
-          animation: widget.controller,
+          animation: widget().controller,
         ),
       ],
     );
@@ -890,7 +890,7 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
 
     // Dismiss if the drag is enough to scale down all the way.
     if (_lastScale == _kMinScale) {
-      widget.onDismiss!(context, _lastScale, _sheetOpacityAnimation.value);
+      widget().onDismiss!(context, _lastScale, _sheetOpacityAnimation.value);
       return;
     }
 
@@ -923,7 +923,7 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
     if (_moveAnimation.value.dy == 0.0) {
       return;
     }
-    widget.onDismiss!(context, _lastScale, _sheetOpacityAnimation.value);
+    widget().onDismiss!(context, _lastScale, _sheetOpacityAnimation.value);
   }
 
   Alignment _getChildAlignment(Orientation orientation, _ContextMenuLocation contextMenuLocation) {
@@ -984,13 +984,13 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
     final Expanded child = Expanded(
       child: Align(
         alignment: _getChildAlignment(
-          widget.orientation,
-          widget.contextMenuLocation,
+          widget().orientation,
+          widget().contextMenuLocation,
         ),
         child: AnimatedBuilder(
           animation: _moveController,
           builder: _buildChildAnimation,
-          child: widget.child,
+          child: widget().child,
         ),
       ),
     );
@@ -1003,10 +1003,10 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
         animation: _sheetController,
         builder: _buildSheetAnimation,
         child: _ContextMenuSheet(
-          key: widget.sheetGlobalKey,
-          actions: widget.actions!,
-          contextMenuLocation: widget.contextMenuLocation,
-          orientation: widget.orientation,
+          key: widget().sheetGlobalKey,
+          actions: widget().actions!,
+          contextMenuLocation: widget().contextMenuLocation,
+          orientation: widget().orientation,
         ),
       ),
     );
@@ -1026,7 +1026,7 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
   // Build the animation for the _ContextMenuSheet.
   Widget _buildSheetAnimation(BuildContext context, Widget? child) {
     return Transform.scale(
-      alignment: _ContextMenuRoute.getSheetAlignment(widget.contextMenuLocation),
+      alignment: _ContextMenuRoute.getSheetAlignment(widget().contextMenuLocation),
       scale: _sheetScaleAnimation.value,
       child: FadeTransition(
         opacity: _sheetOpacityAnimation,
@@ -1038,12 +1038,12 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
   // Build the animation for the child.
   Widget _buildChildAnimation(BuildContext context, Widget? child) {
     _lastScale = _getScale(
-      widget.orientation,
+      widget().orientation,
       MediaQuery.of(context).size.height,
       _moveAnimation.value.dy,
     );
     return Transform.scale(
-      key: widget.childGlobalKey,
+      key: widget().childGlobalKey,
       scale: _lastScale,
       child: child,
     );
@@ -1097,8 +1097,8 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = _getChildren(
-      widget.orientation,
-      widget.contextMenuLocation,
+      widget().orientation,
+      widget().contextMenuLocation,
     );
 
     return SafeArea(
@@ -1113,7 +1113,7 @@ class _ContextMenuRouteStaticState extends State<_ContextMenuRouteStatic> with T
             child: AnimatedBuilder(
               animation: _moveController,
               builder: _buildAnimation,
-              child: widget.orientation == Orientation.portrait
+              child: widget().orientation == Orientation.portrait
                 ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: children,
